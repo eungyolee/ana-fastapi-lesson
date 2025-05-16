@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Path, Header, HTTPException
 from ..service.password_service import check_password
 
 router = APIRouter()
@@ -10,6 +10,14 @@ async def auth_password(
 		min_length=4,
 		max_length=15,
 		regex="^[a-zA-Z0-9]+$"
-	)
+	),
+	secret_token: str = Header(...)
 ):
-	return check_password(password)
+	if secret_token is None or secret_token != "QWERTY":
+		raise HTTPException(status_code=401, detail="Invalid Token")
+
+	result = check_password(password)
+
+	if not result:
+		raise HTTPException(status_code=401, detail="Wrong Password")
+	return result
