@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Path, Header, HTTPException
 from ..service.password_service import check_password
+from ..utils.exceptions import LoginFailedException
 
 router = APIRouter()
 
@@ -19,5 +20,6 @@ async def auth_password(
 	result = check_password(password)
 
 	if not result:
-		raise HTTPException(status_code=401, detail="Wrong Password")
+		# raise HTTPException(status_code=401, detail="Wrong Password")
+		raise LoginFailedException("Wrong Password")
 	return result
